@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS posts (
+    id VARCHAR(36) PRIMARY KEY,
+    title TEXT NOT NULL,
+    content TEXT,
+    author TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
