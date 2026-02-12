@@ -1,22 +1,19 @@
 package controllers;
 
+import handlers.posts.*;
 import io.javalin.Javalin;
-import services.PostsService;
 
 public class PostsController {
-    private final PostsService postsService;
-
     public PostsController(Javalin app) {
-        this.postsService = new PostsService();
         createRoutes(app);
     }
 
     private void createRoutes(Javalin app) {
-        app.get("/", this.postsService::getAll);
-        app.get("/create", this.postsService::create);
-        app.post("/create", this.postsService::store);
-        app.get("/{id}/edit", this.postsService::edit);
-        app.post("/{id}/update", this.postsService::update);
-        app.delete("/{id}", this.postsService::delete);
+        app.get("/", new GetAllPostsHandler()::handle);
+        app.get("/create", new CreatePostHandler()::handle);
+        app.post("/create", new StorePostHandler()::handle);
+        app.get("/{id}/edit", new EditPostHandler()::handle);
+        app.post("/{id}/update", new UpdatePostHandler()::handle);
+        app.delete("/{id}", new DeletePostHandler()::handle);
     }
 }

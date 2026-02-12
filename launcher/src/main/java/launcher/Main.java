@@ -13,7 +13,6 @@ import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinJte;
 import repositories.IPostsRepository;
 import repositories.PostsRepository;
-import services.PostsService;
 
 import java.nio.file.Path;
 
@@ -51,8 +50,6 @@ public class Main {
         injector.register(IDatabaseConnector.class, new InMemoryDatabase());
 
         injector.register(IPostsRepository.class, new PostsRepository());
-
-        injector.register(PostsService.class, new PostsService());
 
         injector.register(PostsController.class, new PostsController(app));
     }
