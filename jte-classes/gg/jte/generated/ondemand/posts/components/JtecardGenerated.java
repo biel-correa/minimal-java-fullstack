@@ -2,7 +2,7 @@ package gg.jte.generated.ondemand.posts.components;
 @SuppressWarnings("unchecked")
 public final class JtecardGenerated {
 	public static final String JTE_NAME = "posts/components/card.jte";
-	public static final int[] JTE_LINE_INFO = {0,0,0,0,0,2,2,2,2,2,4,4,4,4,9,9,9,9,10,10,10,10,18,18,18,19,19,19,20,20,20,0,0,0,0};
+	public static final int[] JTE_LINE_INFO = {0,0,0,0,0,2,2,2,2,2,4,4,4,4,9,9,9,9,10,10,10,10,18,18,20,20,20,20,20,20,20,20,22,22,23,23,23,24,24,24,25,25,25,0,0,0,0};
 	public static void render(gg.jte.html.HtmlTemplateOutput jteOutput, gg.jte.html.HtmlInterceptor jteHtmlInterceptor, models.Post post) {
 		jteOutput.writeContent("\n<div class=\"post\" id=\"post-");
 		jteOutput.setContext("div", "id");
@@ -20,7 +20,19 @@ public final class JtecardGenerated {
 		jteOutput.setContext("button", "hx-target");
 		jteOutput.writeUserContent(post.getId().toString());
 		jteOutput.setContext("button", null);
-		jteOutput.writeContent("\"\n                hx-swap=\"outerHTML\"\n                hx-confirm=\"Are you sure you want to delete this post?\"\n                style=\"background-color: #dc3545; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; color: white;\"\n                title=\"Delete post\">\n            🗑️\n        </button>\n    </div>\n    <div class=\"post-title\">");
+		jteOutput.writeContent("\"\n                hx-swap=\"outerHTML\"\n                hx-confirm=\"Are you sure you want to delete this post?\"\n                style=\"background-color: #dc3545; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; color: white;\"\n                title=\"Delete post\">\n            🗑️\n        </button>\n    </div>\n    ");
+		if (post.getThumbnailPath() != null) {
+			jteOutput.writeContent("\n        <div class=\"post-thumbnail\" style=\"margin-bottom: 10px;\">\n            <img src=\"/uploads/");
+			jteOutput.setContext("img", "src");
+			jteOutput.writeUserContent(post.getThumbnailPath());
+			jteOutput.setContext("img", null);
+			jteOutput.writeContent("\" alt=\"");
+			jteOutput.setContext("img", "alt");
+			jteOutput.writeUserContent(post.getTitle());
+			jteOutput.setContext("img", null);
+			jteOutput.writeContent(" thumbnail\" style=\"max-width: 250px; height: auto; border-radius: 4px;\">\n        </div>\n    ");
+		}
+		jteOutput.writeContent("\n    <div class=\"post-title\">");
 		jteOutput.setContext("div", null);
 		jteOutput.writeUserContent(post.getTitle());
 		jteOutput.writeContent("</div>\n    <div class=\"post-content\">");

@@ -22,7 +22,8 @@ public class PostsRepository implements IPostsRepository {
                 String id = dbResult.getString("id");
                 String title = dbResult.getString("title");
                 String content = dbResult.getString("content");
-                posts.add(new Post(UUID.fromString(id), title, content));
+                String thumbnailPath = dbResult.getString("thumbnail_path");
+                posts.add(new Post(UUID.fromString(id), title, content, thumbnailPath));
             }
 
             return posts;
@@ -38,7 +39,8 @@ public class PostsRepository implements IPostsRepository {
                 String postId = dbResult.getString("id");
                 String title = dbResult.getString("title");
                 String content = dbResult.getString("content");
-                return Optional.of(new Post(UUID.fromString(postId), title, content));
+                String thumbnailPath = dbResult.getString("thumbnail_path");
+                return Optional.of(new Post(UUID.fromString(postId), title, content, thumbnailPath));
             }
             return Optional.empty();
         } catch (Exception e) {
@@ -49,7 +51,8 @@ public class PostsRepository implements IPostsRepository {
     @Override
     public void store(Post post) {
         try {
-            db.execute("INSERT INTO posts (id, title, content) VALUES (?, ?, ?)", post.getId().toString(), post.getTitle(), post.getContent());
+            db.execute("INSERT INTO posts (id, title, content, thumbnail_path) VALUES (?, ?, ?, ?)",
+                    post.getId().toString(), post.getTitle(), post.getContent(), post.getThumbnailPath());
         } catch (Exception e) {
             throw new RuntimeException("Failed to store post in database", e);
         }
@@ -58,7 +61,8 @@ public class PostsRepository implements IPostsRepository {
     @Override
     public void update(Post post) {
         try {
-            db.execute("UPDATE posts SET title = ?, content = ? WHERE id = ?", post.getTitle(), post.getContent(), post.getId().toString());
+            db.execute("UPDATE posts SET title = ?, content = ?, thumbnail_path = ? WHERE id = ?",
+                    post.getTitle(), post.getContent(), post.getThumbnailPath(), post.getId().toString());
         } catch (Exception e) {
             throw new RuntimeException("Failed to update post in database", e);
         }

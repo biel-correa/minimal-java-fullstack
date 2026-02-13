@@ -3,15 +3,19 @@ package handlers.posts;
 import handlers.Handler;
 import injector.DI;
 import io.javalin.http.Context;
+import io.javalin.http.UploadedFile;
 import models.Post;
 import org.jetbrains.annotations.NotNull;
 import repositories.IPostsRepository;
+import storage.FileStorage;
+import storage.StorageException;
 
 import java.util.Optional;
 import java.util.UUID;
 
 public class UpdatePostHandler extends Handler {
     private final IPostsRepository postRepository = DI.getInstance().get(IPostsRepository.class);
+    private final FileStorage fileStorage = DI.getInstance().get(FileStorage.class);
 
     @Override
     public void handle(@NotNull Context ctx) {
@@ -34,12 +38,39 @@ public class UpdatePostHandler extends Handler {
         post.setTitle(title);
         post.setContent(content);
 
+        var thumbnail = ctx.uploadedFile("thumbnail");
         try {
+            updateThumbnailIfPresent(post, thumbnail);
             this.postRepository.update(post);
             ctx.redirect("/");
-        } catch (Exception e) {
-            ctx.status(500).result("Failed to update post.");
+        } catch (StorageException e) {
+            ctx.status(500).result("Failed to update thumbnail");
         }
+    }
+
+    private void updateThumbnailIfPresent(Post post, UploadedFile thumbnail) {
+        if (thumbnail == null || thumbnail.size() <= 0) {
+            return;
+        }
+        var extension = getExtension(thumbnail.filename());
+        var targetPath = "thumbnails/" + post.getId() + extension;
+        var previousPath = post.getThumbnailPath();
+        try (var content = thumbnail.content()) {
+            fileStorage.save(targetPath, content);
+            if (previousPath != null && !previousPath.equals(targetPath)) {
+                fileStorage.delete(previousPath);
+            }
+            post.setThumbnailPath(targetPath);
+        } catch (Exception e) {
+            throw new StorageException("Failed to update thumbnail", e);
+        }
+    }
+
+    private String getExtension(String filename) {
+        if (filename == null || !filename.contains(".")) {
+            return "";
+        }
+        return filename.substring(filename.lastIndexOf('.')).toLowerCase();
     }
 
     private Optional<Post> getPost(String id) {
@@ -51,4 +82,3 @@ public class UpdatePostHandler extends Handler {
         }
     }
 }
-

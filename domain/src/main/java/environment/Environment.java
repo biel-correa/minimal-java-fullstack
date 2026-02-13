@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Environment {
     private static Environment instance;
-    private final List<String> validKeys = List.of("TEMPLATE_PATH", "MIGRATIONS_PATH");
+    private final List<String> validKeys = List.of("TEMPLATE_PATH", "MIGRATIONS_PATH", "STORAGE_ROOT");
     private final Map<String, String> env = new HashMap<>();
 
     private Environment() {

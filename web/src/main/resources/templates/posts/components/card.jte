@@ -16,6 +16,11 @@
             🗑️
         </button>
     </div>
+    @if(post.getThumbnailPath() != null)
+        <div class="post-thumbnail" style="margin-bottom: 10px;">
+            <img src="/uploads/${post.getThumbnailPath()}" alt="${post.getTitle()} thumbnail" style="max-width: 250px; height: auto; border-radius: 4px;">
+        </div>
+    @endif
     <div class="post-title">${post.getTitle()}</div>
     <div class="post-content">${post.getContent()}</div>
 </div>

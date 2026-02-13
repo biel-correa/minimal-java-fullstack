@@ -6,17 +6,21 @@ public class Post {
     private final UUID id;
     private String title;
     private String content;
+    private String thumbnailPath;
 
     public Post(String title, String content) {
-        this.id = UUID.randomUUID();
-        this.title = title;
-        this.content = content;
+        this(UUID.randomUUID(), title, content, null);
     }
 
     public Post(UUID id, String title, String content) {
+        this(id, title, content, null);
+    }
+
+    public Post(UUID id, String title, String content, String thumbnailPath) {
         this.id = id;
         this.title = title;
         this.content = content;
+        this.thumbnailPath = thumbnailPath;
     }
 
     public UUID getId() {
@@ -37,5 +41,13 @@ public class Post {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getThumbnailPath() {
+        return thumbnailPath;
+    }
+
+    public void setThumbnailPath(String thumbnailPath) {
+        this.thumbnailPath = thumbnailPath;
     }
 }
