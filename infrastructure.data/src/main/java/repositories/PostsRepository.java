@@ -1,28 +1,28 @@
 package repositories;
 
-import dataAccess.IDatabaseConnector;
+import dataAccess.DatabaseConnector;
 import injector.DI;
 import models.Post;
 
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public class PostsRepository implements IPostsRepository {
-    private final IDatabaseConnector db = DI.getInstance().get(IDatabaseConnector.class);
+    private final DatabaseConnector db = DI.getInstance().get(DatabaseConnector.class);
 
     @Override
     public List<Post> getAll() {
-        try (ResultSet dbResult = db.select("SELECT * FROM posts")) {
+        String query = "SELECT * FROM posts";
+        try (var resultSet = db.select(query)) {
             List<Post> posts = new ArrayList<>();
 
-            while (dbResult.next()) {
-                String id = dbResult.getString("id");
-                String title = dbResult.getString("title");
-                String content = dbResult.getString("content");
-                String thumbnailPath = dbResult.getString("thumbnail_path");
+            while (resultSet.next()) {
+                String id = resultSet.getString("id");
+                String title = resultSet.getString("title");
+                String content = resultSet.getString("content");
+                String thumbnailPath = resultSet.getString("thumbnail_path");
                 posts.add(new Post(UUID.fromString(id), title, content, thumbnailPath));
             }
 
@@ -34,12 +34,13 @@ public class PostsRepository implements IPostsRepository {
 
     @Override
     public Optional<Post> findById(UUID id) {
-        try (ResultSet dbResult = db.select("SELECT * FROM posts WHERE id = ?", id.toString())) {
-            if (dbResult.next()) {
-                String postId = dbResult.getString("id");
-                String title = dbResult.getString("title");
-                String content = dbResult.getString("content");
-                String thumbnailPath = dbResult.getString("thumbnail_path");
+        String query = "SELECT * FROM posts WHERE id = ?";
+        try (var resultSet = db.select(query, id.toString())) {
+            if (resultSet.next()) {
+                String postId = resultSet.getString("id");
+                String title = resultSet.getString("title");
+                String content = resultSet.getString("content");
+                String thumbnailPath = resultSet.getString("thumbnail_path");
                 return Optional.of(new Post(UUID.fromString(postId), title, content, thumbnailPath));
             }
             return Optional.empty();

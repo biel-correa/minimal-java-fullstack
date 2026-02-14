@@ -13,19 +13,19 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.stream.Stream;
 
-public class InMemoryDatabase implements IDatabaseConnector {
-    final String url = "jdbc:sqlite:db.db";
+public class SqliteDatabase implements DatabaseConnector {
+    private static final String DB_URL = "jdbc:sqlite:db.db";
 
     private Connection connection;
 
-    public InMemoryDatabase() {
+    public SqliteDatabase() {
         connect();
     }
 
     @Override
     public void connect() {
         try {
-            connection = DriverManager.getConnection(url);
+            connection = DriverManager.getConnection(DB_URL);
             if (connection == null) {
                 System.err.println("Failed to connect to SQLite.");
                 return;
@@ -35,11 +35,6 @@ public class InMemoryDatabase implements IDatabaseConnector {
         } catch (SQLException e) {
             System.err.println("Connection error: " + e.getMessage());
         }
-    }
-
-    @Override
-    public Connection getConnection() {
-        return connection;
     }
 
     @Override
@@ -125,16 +120,23 @@ public class InMemoryDatabase implements IDatabaseConnector {
     }
 
     @Override
-    public ResultSet select(String query, Object... params) {
-        try {
-            PreparedStatement pstmt = connection.prepareStatement(query);
-            for (int i = 0; i < params.length; i++) {
-                pstmt.setObject(i + 1, params[i]);
-            }
-            return pstmt.executeQuery();
-        } catch (SQLException e) {
-            throw new RuntimeException("Error executing query: " + e.getMessage());
+    public PreparedStatement prepareStatement(String query, Object... params) throws SQLException {
+        PreparedStatement pstmt = connection.prepareStatement(query);
+        for (int i = 0; i < params.length; i++) {
+            pstmt.setObject(i + 1, params[i]);
         }
+        return pstmt;
+    }
+
+    /**
+     * Executes a SELECT query and returns the ResultSet.
+     * Note: The caller is responsible for closing the ResultSet, which will also close
+     * the underlying PreparedStatement. Use try-with-resources for proper resource management.
+     */
+    @Override
+    public ResultSet select(String query, Object... params) throws SQLException {
+        PreparedStatement pstmt = prepareStatement(query, params);
+        return pstmt.executeQuery();
     }
 
     @Override
@@ -146,6 +148,18 @@ public class InMemoryDatabase implements IDatabaseConnector {
             pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Error executing query: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void close() {
+        if (connection != null) {
+            try {
+                connection.close();
+                System.out.println("Database connection closed.");
+            } catch (SQLException e) {
+                System.err.println("Error closing database connection: " + e.getMessage());
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 package handlers.posts;
 
 import handlers.Handler;
+import handlers.utils.FileUtils;
 import injector.DI;
 import io.javalin.http.Context;
 import io.javalin.http.UploadedFile;
@@ -42,7 +43,7 @@ public class StorePostHandler extends Handler {
         if (thumbnail == null || thumbnail.size() <= 0) {
             return null;
         }
-        var extension = getExtension(thumbnail.filename());
+        var extension = FileUtils.getFileExtension(thumbnail.filename());
         var targetPath = "thumbnails/" + postId + extension;
         try (var content = thumbnail.content()) {
             fileStorage.save(targetPath, content);
@@ -50,13 +51,5 @@ public class StorePostHandler extends Handler {
         } catch (Exception e) {
             throw new StorageException("Failed to save thumbnail", e);
         }
-    }
-
-    private String getExtension(String filename) {
-        if (filename == null || !filename.contains(".")) {
-            return "";
-        }
-        var suffix = filename.substring(filename.lastIndexOf('.'));
-        return suffix.toLowerCase();
     }
 }

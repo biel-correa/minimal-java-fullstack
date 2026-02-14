@@ -1,6 +1,7 @@
 package handlers.posts;
 
 import handlers.Handler;
+import handlers.utils.FileUtils;
 import injector.DI;
 import io.javalin.http.Context;
 import io.javalin.http.UploadedFile;
@@ -52,7 +53,7 @@ public class UpdatePostHandler extends Handler {
         if (thumbnail == null || thumbnail.size() <= 0) {
             return;
         }
-        var extension = getExtension(thumbnail.filename());
+        var extension = FileUtils.getFileExtension(thumbnail.filename());
         var targetPath = "thumbnails/" + post.getId() + extension;
         var previousPath = post.getThumbnailPath();
         try (var content = thumbnail.content()) {
@@ -66,12 +67,6 @@ public class UpdatePostHandler extends Handler {
         }
     }
 
-    private String getExtension(String filename) {
-        if (filename == null || !filename.contains(".")) {
-            return "";
-        }
-        return filename.substring(filename.lastIndexOf('.')).toLowerCase();
-    }
 
     private Optional<Post> getPost(String id) {
         try {

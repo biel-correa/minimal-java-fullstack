@@ -17,6 +17,15 @@ public class Post {
     }
 
     public Post(UUID id, String title, String content, String thumbnailPath) {
+        if (id == null) {
+            throw new IllegalArgumentException("Post id cannot be null");
+        }
+        if (title == null || title.isBlank()) {
+            throw new IllegalArgumentException("Post title cannot be null or blank");
+        }
+        if (content == null || content.isBlank()) {
+            throw new IllegalArgumentException("Post content cannot be null or blank");
+        }
         this.id = id;
         this.title = title;
         this.content = content;
@@ -32,6 +41,9 @@ public class Post {
     }
 
     public void setTitle(String title) {
+        if (title == null || title.isBlank()) {
+            throw new IllegalArgumentException("Post title cannot be null or blank");
+        }
         this.title = title;
     }
 
@@ -40,6 +52,9 @@ public class Post {
     }
 
     public void setContent(String content) {
+        if (content == null || content.isBlank()) {
+            throw new IllegalArgumentException("Post content cannot be null or blank");
+        }
         this.content = content;
     }
 

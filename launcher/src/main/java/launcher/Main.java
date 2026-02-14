@@ -1,8 +1,8 @@
 package launcher;
 
 import controllers.PostsController;
-import dataAccess.IDatabaseConnector;
-import dataAccess.InMemoryDatabase;
+import dataAccess.DatabaseConnector;
+import dataAccess.SqliteDatabase;
 import environment.Environment;
 import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
@@ -21,7 +21,11 @@ import storage.StorageConfig;
 import java.nio.file.Path;
 
 public class Main {
-    void main() {
+    static void main() {
+        new Main().start();
+    }
+
+    private void start() {
         loadDotEnv();
         Path storageRoot = resolveStorageRoot();
 
@@ -50,14 +54,14 @@ public class Main {
     }
 
     private void runMigrations() {
-        final IDatabaseConnector db = DI.getInstance().get(IDatabaseConnector.class);
+        final DatabaseConnector db = DI.getInstance().get(DatabaseConnector.class);
         db.migrate();
     }
 
     private void registerDependencies(Javalin app, Path storageRoot) {
         final DI injector = DI.getInstance();
 
-        injector.register(IDatabaseConnector.class, new InMemoryDatabase());
+        injector.register(DatabaseConnector.class, new SqliteDatabase());
         injector.register(FileStorage.class, new LocalFileStorage(StorageConfig.of(storageRoot)));
         injector.register(IPostsRepository.class, new PostsRepository());
         injector.register(PostsController.class, new PostsController(app));

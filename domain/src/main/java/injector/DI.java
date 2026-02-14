@@ -10,13 +10,21 @@ public class DI {
     private DI() {}
 
     public <T> void register(Class<T> clazz, T instance) {
+        if (instance == null) {
+            throw new IllegalArgumentException("Cannot register null instance for class: " + clazz.getName());
+        }
+
+        if (!clazz.isInstance(instance)) {
+            throw new IllegalStateException("Registered instance is not of expected type: " + clazz.getName());
+        }
+
         instances.put(clazz.getName(), instance);
     }
 
     public <T> T get(Class<T> clazz) {
         Object instance = instances.get(clazz.getName());
         if (instance == null) {
-            throw new RuntimeException("No instance registered for class: " + clazz.getName());
+            throw new IllegalStateException("No instance registered for class: " + clazz.getName());
         }
 
         return (T) instance;
